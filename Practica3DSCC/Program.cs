@@ -27,7 +27,7 @@ namespace Practica3DSCC
         private GHI.Glide.Display.Window camaraWindow;
         private Button btn_start;
         private Button btn_stop;
-
+        SensorProximidad sensor_prox;
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
@@ -53,6 +53,8 @@ namespace Practica3DSCC
             camaraWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.camaraWindow));
             GlideTouch.Initialize();
 
+             sensor_prox = new SensorProximidad(extender);
+
             //Inicializa los botones en la interface
             btn_start = (Button)controlWindow.GetChildByName("start");
             btn_stop = (Button)controlWindow.GetChildByName("stop");
@@ -66,11 +68,14 @@ namespace Practica3DSCC
         void btn_stop_TapEvent(object sender)
         {
             Debug.Print("Stop");
+            sensor_prox.StopSampling();
+
         }
 
         void btn_start_TapEvent(object sender)
         {
             Debug.Print("Start");
+            sensor_prox.StartSampling();
         }
     }
 }

@@ -24,20 +24,37 @@ namespace Practica3DSCC
 
         //EVENTO ObjectOn: Disparar este evento cuando el sensor detecte la presencia de un objeto
         public event ObjectOnEventHandler ObjectOn;
+        GTM.GHIElectronics.Extender extender;
+
+        GT.SocketInterfaces.DigitalOutput dig_out;
+        GT.SocketInterfaces.AnalogInput anag_in;
+        GT.Socket.Pin pin_socket_3 = GT.Socket.Pin.Three;
+        GT.Socket.Pin pin_socket_5 = GT.Socket.Pin.Five;
         
         public SensorProximidad(GTM.GHIElectronics.Extender extender)
         {
             //TODO: Inicializar el sensor
+            this.extender = extender;
+            this.dig_out = this.extender.CreateDigitalOutput(pin_socket_5, false);
+            this.anag_in = this.extender.CreateAnalogInput(pin_socket_3);
         }
 
         public void StartSampling()
         {
             //TODO: Activar el LED infrarrojo y empezar a muestrear el foto-transistor
+
+            this.dig_out.Write(true);
+            
+            this.anag_in.IsActive = true;
+           // this.anag_in.ReadVoltage();
+
         }
 
         public void StopSampling()
         {
             //TODO: Desactivar el LED infrarrojo y detener el muestreo del foto-transistor
+            this.dig_out.Write(false);
+            this.anag_in.IsActive = false;
         }
     }
 }
