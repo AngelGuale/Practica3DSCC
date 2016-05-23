@@ -30,13 +30,18 @@ namespace Practica3DSCC
         GT.SocketInterfaces.AnalogInput anag_in;
         GT.Socket.Pin pin_socket_3 = GT.Socket.Pin.Three;
         GT.Socket.Pin pin_socket_5 = GT.Socket.Pin.Five;
-        
+
+        GT.Timer timer;
+
         public SensorProximidad(GTM.GHIElectronics.Extender extender)
         {
             //TODO: Inicializar el sensor
             this.extender = extender;
             this.dig_out = this.extender.CreateDigitalOutput(pin_socket_5, false);
             this.anag_in = this.extender.CreateAnalogInput(pin_socket_3);
+            timer = new GT.Timer(500, GT.Timer.BehaviorType.RunContinuously); // Create a timer
+            timer.Tick += timer_Tick; // Run the method timer_tick when the timer ticks
+           
         }
 
         public void StartSampling()
@@ -47,7 +52,25 @@ namespace Practica3DSCC
             
             this.anag_in.IsActive = true;
            // this.anag_in.ReadVoltage();
+            timer.Start();
 
+        }
+
+        private void timer_Tick(GT.Timer timer)
+        {
+           double volt= this.anag_in.ReadVoltage();
+
+           Debug.Print(volt.ToString());
+           if (volt < 3.10)
+           {
+               Debug.Print("Hay objeto");
+               ObjectOn();
+               
+           }
+           else {
+               Debug.Print("No hay objeto");
+               ObjectOff();
+           }
         }
 
         public void StopSampling()

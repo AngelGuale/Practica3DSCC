@@ -61,8 +61,37 @@ namespace Practica3DSCC
             btn_start.TapEvent += btn_start_TapEvent;
             btn_stop.TapEvent += btn_stop_TapEvent;
 
+
+            camera.CameraConnected += camera_CameraConnected;
+            camera.BitmapStreamed += camera_BitmapStreamed;
             //Selecciona mainWindow como la ventana de inicio
             Glide.MainWindow = controlWindow;
+
+            sensor_prox.ObjectOn += sensor_prox_ObjectOn;
+            sensor_prox.ObjectOff += sensor_prox_ObjectOff;
+        }
+
+        private void camera_BitmapStreamed(Camera sender, Bitmap e)
+        {
+            displayT35.SimpleGraphics.DisplayImage(e, 0, 0);
+        
+            Debug.Print("Funcioooon callback");
+        }
+
+        private void camera_CameraConnected(Camera sender, EventArgs e)
+        {
+           // camera.StartStreaming();
+            Debug.Print("connected");
+        }
+
+        void sensor_prox_ObjectOff()
+        {
+            camera.StopStreaming();
+        }
+
+        void sensor_prox_ObjectOn()
+        {
+            camera.StartStreaming();
         }
 
         void btn_stop_TapEvent(object sender)
@@ -77,5 +106,8 @@ namespace Practica3DSCC
             Debug.Print("Start");
             sensor_prox.StartSampling();
         }
+
+
+
     }
 }
