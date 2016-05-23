@@ -28,6 +28,8 @@ namespace Practica3DSCC
         private Button btn_start;
         private Button btn_stop;
         SensorProximidad sensor_prox;
+        enum Estado { ESTADO_1, ESTADO_2, ESTADO_3 };
+        Estado actual;
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
@@ -61,6 +63,7 @@ namespace Practica3DSCC
             btn_start.TapEvent += btn_start_TapEvent;
             btn_stop.TapEvent += btn_stop_TapEvent;
 
+            actual = Estado.ESTADO_1;
 
             camera.CameraConnected += camera_CameraConnected;
             camera.BitmapStreamed += camera_BitmapStreamed;
@@ -69,6 +72,7 @@ namespace Practica3DSCC
 
             sensor_prox.ObjectOn += sensor_prox_ObjectOn;
             sensor_prox.ObjectOff += sensor_prox_ObjectOff;
+            
         }
 
         private void camera_BitmapStreamed(Camera sender, Bitmap e)
@@ -86,28 +90,63 @@ namespace Practica3DSCC
 
         void sensor_prox_ObjectOff()
         {
-            camera.StopStreaming();
+          //  camera.StopStreaming();
+            cambiarEstado(Estado.ESTADO_2);
         }
 
         void sensor_prox_ObjectOn()
         {
-            camera.StartStreaming();
+          //  camera.StartStreaming();
+            cambiarEstado(Estado.ESTADO_3);
         }
 
         void btn_stop_TapEvent(object sender)
         {
             Debug.Print("Stop");
-            sensor_prox.StopSampling();
+           // sensor_prox.StopSampling();
+            cambiarEstado(Estado.ESTADO_1);
 
         }
 
         void btn_start_TapEvent(object sender)
         {
             Debug.Print("Start");
-            sensor_prox.StartSampling();
+           // sensor_prox.StartSampling();
+            cambiarEstado(Estado.ESTADO_2);
         }
 
+        private void cambiarEstado(Estado es) {
+            TextBlock text = (TextBlock)controlWindow.GetChildByName("status");
+                   
+            switch(es){
+                case Estado.ESTADO_1:
+                    
+                    Glide.MainWindow = controlWindow;
+                    sensor_prox.StopSampling();
+                    text.Text = "Monitoreo OFF";
+                    actual = Estado.ESTADO_1;
+                    break;
+                case Estado.ESTADO_2:
+                    
+                    Glide.MainWindow = controlWindow;
+                    sensor_prox.StartSampling();
+                    camera.StopStreaming();
+                    text.Text = "Monitoreo ON";
+                    actual = Estado.ESTADO_2;
+                    break;
+                case Estado.ESTADO_3:
+                    if (actual != Estado.ESTADO_3)
+                    { Glide.MainWindow = camaraWindow; }
+                    camera.StartStreaming();
+                    actual = Estado.ESTADO_3;
+                    break;
+                default:
+                    Debug.Print("Aiiiuudaaaa");
+                    break;
 
+
+            }
+        }
 
     }
 }

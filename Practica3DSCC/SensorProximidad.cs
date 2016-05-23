@@ -78,6 +78,7 @@ namespace Practica3DSCC
             //TODO: Desactivar el LED infrarrojo y detener el muestreo del foto-transistor
             this.dig_out.Write(false);
             this.anag_in.IsActive = false;
+            timer.Stop();
         }
     }
 }
