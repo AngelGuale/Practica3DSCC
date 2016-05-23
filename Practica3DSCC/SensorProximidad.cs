@@ -32,16 +32,16 @@ namespace Practica3DSCC
         GT.Socket.Pin pin_socket_5 = GT.Socket.Pin.Five;
 
         GT.Timer timer;
-
+        Boolean actual;
         public SensorProximidad(GTM.GHIElectronics.Extender extender)
         {
             //TODO: Inicializar el sensor
             this.extender = extender;
             this.dig_out = this.extender.CreateDigitalOutput(pin_socket_5, false);
             this.anag_in = this.extender.CreateAnalogInput(pin_socket_3);
-            timer = new GT.Timer(500, GT.Timer.BehaviorType.RunContinuously); // Create a timer
+            timer = new GT.Timer(1800, GT.Timer.BehaviorType.RunContinuously); // Create a timer
             timer.Tick += timer_Tick; // Run the method timer_tick when the timer ticks
-           
+            actual = false;
         }
 
         public void StartSampling()
@@ -51,34 +51,46 @@ namespace Practica3DSCC
             this.dig_out.Write(true);
             
             this.anag_in.IsActive = true;
+            actual=true;
            // this.anag_in.ReadVoltage();
             timer.Start();
+            
 
         }
 
         private void timer_Tick(GT.Timer timer)
         {
            double volt= this.anag_in.ReadVoltage();
-
+            
            Debug.Print(volt.ToString());
            if (volt < 3.10)
            {
-               Debug.Print("Hay objeto");
-               ObjectOn();
+               if (actual)
+               {
+                   Debug.Print("Hay objeto");
+                   ObjectOn();
+               }
+                            
                
            }
            else {
                Debug.Print("No hay objeto");
-               ObjectOff();
+               if (actual)
+               {
+                   ObjectOff();
+               }
+              
            }
+       
         }
 
         public void StopSampling()
         {
             //TODO: Desactivar el LED infrarrojo y detener el muestreo del foto-transistor
+            timer.Stop();
             this.dig_out.Write(false);
             this.anag_in.IsActive = false;
-            timer.Stop();
+            actual = false;
         }
     }
 }
